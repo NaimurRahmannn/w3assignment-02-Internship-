@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 220" width="820" height="220">
+
+  <!-- Background -->
+  <rect width="820" height="220" rx="14" fill="#0C3D34"/>
+
+  <!-- ===================== CIRCLE ICON ===================== -->
+  <!-- Outer circle -->
+  <circle cx="115" cy="110" r="88" fill="none" stroke="#C8DDD8" stroke-width="3.5"/>
+  <!-- Inner circle (double ring) -->
+  <circle cx="115" cy="110" r="80" fill="none" stroke="#C8DDD8" stroke-width="1.5"/>
+
+  <!-- Horizon line -->
+  <line x1="38" y1="148" x2="192" y2="148" stroke="#C8DDD8" stroke-width="2"/>
+
+  <!-- Wave below horizon -->
+  <path d="M38 158 Q75 152 115 158 Q155 164 192 158" stroke="#C8DDD8" stroke-width="1.4" fill="none"/>
+
+  <!-- Island mound -->
+  <ellipse cx="95" cy="148" rx="42" ry="10" fill="#C8DDD8"/>
+
+  <!-- SUNRISE RAYS — origin at (95, 148) -->
+  <g stroke="#C8DDD8" stroke-linecap="round" stroke-width="2.2">
+    <line x1="95" y1="148" x2="42"  y2="55"/>
+    <line x1="95" y1="148" x2="57"  y2="46"/>
+    <line x1="95" y1="148" x2="72"  y2="41"/>
+    <line x1="95" y1="148" x2="85"  y2="39"/>
+    <line x1="95" y1="148" x2="96"  y2="38"/>
+    <line x1="95" y1="148" x2="108" y2="40"/>
+    <line x1="95" y1="148" x2="120" y2="46"/>
+    <line x1="95" y1="148" x2="132" y2="56"/>
+  </g>
+
+  <!-- PALM TREE — right side, two trunks -->
+  <!-- Main trunk (leans slightly left) -->
+  <path d="M158 148 Q154 124 148 104 Q143 86 139 70" stroke="#C8DDD8" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+  <!-- Secondary trunk (leans right) -->
+  <path d="M163 148 Q166 126 168 108 Q170 92 170 80" stroke="#C8DDD8" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+
+  <!-- Fronds from main trunk (139, 70) -->
+  <path d="M139 70 Q124 63 110 68"  stroke="#C8DDD8" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M139 70 Q126 56 114 52"  stroke="#C8DDD8" stroke-width="2"   fill="none" stroke-linecap="round"/>
+  <path d="M139 70 Q132 54 130 44"  stroke="#C8DDD8" stroke-width="2"   fill="none" stroke-linecap="round"/>
+  <path d="M139 70 Q139 52 140 43"  stroke="#C8DDD8" stroke-width="2"   fill="none" stroke-linecap="round"/>
+  <path d="M139 70 Q147 53 152 45"  stroke="#C8DDD8" stroke-width="2"   fill="none" stroke-linecap="round"/>
+  <path d="M139 70 Q152 58 162 54"  stroke="#C8DDD8" stroke-width="2"   fill="none" stroke-linecap="round"/>
+  <path d="M139 70 Q154 66 166 65"  stroke="#C8DDD8" stroke-width="2"   fill="none" stroke-linecap="round"/>
+
+  <!-- Fronds from secondary trunk (170, 80) -->
+  <path d="M170 80 Q180 68 192 65"  stroke="#C8DDD8" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M170 80 Q182 74 194 74"  stroke="#C8DDD8" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M170 80 Q178 88 188 90"  stroke="#C8DDD8" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+
+  <!-- ===================== AIBR TEXT ===================== -->
+  <!-- Thin elegant font matching original -->
+  <text x="225" y="158"
+        font-family="'Gill Sans', 'Optima', 'Trebuchet MS', sans-serif"
+        font-size="118"
+        font-weight="300"
+        letter-spacing="6"
+        fill="#C8DDD8">AIBR</text>
+
+</svg>
