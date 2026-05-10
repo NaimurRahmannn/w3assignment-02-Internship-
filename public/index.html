@@ -113,10 +113,10 @@
           <div class="gallery__grid">
             <article class="gallery__item gallery__item--large">
               <img src="assets/gallery-main.jpg" alt="Wide exterior view of Sanctuary Cap Cana by the water">
-              <a href="#" class="gallery__view-all">
+              <button class="gallery__view-all" type="button" data-gallery-open aria-haspopup="dialog">
                 <i class="fa-regular fa-image" aria-hidden="true"></i>
-                <span>View all images (180)</span>
-              </a>
+                <span>View All Images(180)</span>
+              </button>
             </article>
 
             <article class="gallery__item">
@@ -1204,6 +1204,38 @@
 
     </div>
   </footer>
+
+  <div class="image-modal" id="gallery-modal" hidden aria-hidden="true">
+    <div class="image-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="gallery-modal-title">
+      <header class="image-modal__header">
+        <div>
+          <p class="image-modal__eyebrow">Gallery</p>
+          <h2 class="image-modal__title" id="gallery-modal-title">Property images</h2>
+        </div>
+        <span class="image-modal__desktop-count" data-gallery-total>Loading photos</span>
+        <span class="image-modal__mobile-counter" data-gallery-counter>1 / 1</span>
+        <button class="image-modal__close" type="button" data-gallery-close aria-label="Close gallery">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="image-modal__viewport" aria-live="polite">
+        <button class="image-modal__nav image-modal__nav--prev" type="button" data-gallery-prev aria-label="Previous image">
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+
+        <div class="image-modal__scroller">
+          <div class="image-modal__track" data-gallery-track></div>
+        </div>
+
+        <button class="image-modal__nav image-modal__nav--next" type="button" data-gallery-next aria-label="Next image">
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
 </body>
 
 </html>
