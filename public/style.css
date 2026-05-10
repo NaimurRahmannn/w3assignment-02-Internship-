@@ -820,17 +820,24 @@ body {
     font-size: 18px;
 }
 
+.about-card__more {
+  margin-bottom: 12px;
+}
+
 .about-card__show-more {
-    display: inline-block;
-    color: #3a3a3a;
-    ;
-    font-weight: 200;
-    text-decoration: underline;
+  display: inline-block;
+  color: #3a3a3a;
+  font-weight: 200;
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
 }
 
 .about-card__show-more:hover {
-    color: #f28a00;
-    ;
+  color: #f28a00;
 }
 
 /* =========================

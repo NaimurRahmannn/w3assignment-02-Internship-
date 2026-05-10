@@ -2,10 +2,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const openButtons = document.querySelectorAll("[data-gallery-open]");
   const modal = document.querySelector("#gallery-modal");
 
+  // About section expand/collapse toggle.
+  const aboutSection = document.querySelector("[data-about-description]");
+  if (aboutSection) {
+    const moreContent = aboutSection.querySelector("[data-about-more]");
+    const toggleButton = aboutSection.querySelector("[data-about-toggle]");
+
+    if (moreContent && toggleButton) {
+      const setExpanded = (expanded) => {
+        moreContent.hidden = !expanded;
+        toggleButton.textContent = expanded ? "Show less" : "Show more";
+        toggleButton.setAttribute("aria-expanded", String(expanded));
+      };
+
+      setExpanded(false);
+      toggleButton.addEventListener("click", () => {
+        setExpanded(moreContent.hidden);
+      });
+    }
+  }
+
   if (!openButtons.length || !modal) {
     return;
   }
 
+  // Gallery modal state, image loading, and URL sync.
   const closeButton = modal.querySelector("[data-gallery-close]");
   const prevButton = modal.querySelector("[data-gallery-prev]");
   const nextButton = modal.querySelector("[data-gallery-next]");
@@ -223,6 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // Mobile swipe handling for the gallery slider.
   const beginDrag = (clientX, clientY, pointerId) => {
     if (!mobileQuery.matches || images.length < 2) {
       return false;

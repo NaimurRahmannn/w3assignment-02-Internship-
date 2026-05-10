@@ -158,7 +158,7 @@
             <div class="about-card__heading-line"></div>
             <div class="about-card__content">
               <!-- Left Side: Resort Description -->
-              <div class="about-card__description">
+              <div class="about-card__description" data-about-description>
                 <p class="about-card__text">
                   Rediscover Sanctuary Cap Cana, the Dominican Republic’s most exclusive adults-only all-inclusive
                   resort. You’ll be delighted by the resort’s $45 million modernization as you explore spectacular
@@ -170,7 +170,19 @@
                   gated community retreat inside Punta Cana. Cap Cana is made up of 30,000 acres of flawless
                   beaches...
                 </p>
-                <a href="#" class="about-card__show-more">Show more</a>
+                <div class="about-card__more" id="about-description-more" data-about-more hidden>
+                  <p class="about-card__text">
+                    Enjoy sweeping ocean vistas, intimate beach lounges, and a marina district filled with boutiques
+                    and dining. The resort blends timeless Caribbean architecture with modern comforts, delivering
+                    serene suites, private pools, and sunset terraces designed for quiet escape. Experience curated
+                    culinary journeys, attentive butler service, and wellness rituals that turn every moment into a
+                    restorative retreat.
+                  </p>
+                </div>
+                <button class="about-card__show-more" type="button" data-about-toggle aria-expanded="false"
+                  aria-controls="about-description-more">
+                  Show more
+                </button>
               </div>
 
               <!-- Right Side: Room-Specific Amenities -->
