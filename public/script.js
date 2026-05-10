@@ -22,6 +22,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Amenities list expand/collapse toggle.
+  const amenitiesSection = document.querySelector("[data-amenities-description]");
+  if (amenitiesSection) {
+    const moreAmenities = amenitiesSection.querySelector("[data-amenities-more]");
+    const toggleButton = amenitiesSection.querySelector("[data-amenities-toggle]");
+
+    if (moreAmenities && toggleButton) {
+      const setExpanded = (expanded) => {
+        moreAmenities.hidden = !expanded;
+        toggleButton.textContent = expanded ? "Show less" : "Show more";
+        toggleButton.setAttribute("aria-expanded", String(expanded));
+      };
+
+      setExpanded(false);
+      toggleButton.addEventListener("click", () => {
+        setExpanded(moreAmenities.hidden);
+      });
+    }
+  }
+
   if (!openButtons.length || !modal) {
     return;
   }

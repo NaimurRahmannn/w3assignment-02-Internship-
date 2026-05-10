@@ -186,7 +186,7 @@
               </div>
 
               <!-- Right Side: Room-Specific Amenities -->
-              <div class="about-card__amenities">
+              <div class="about-card__amenities" data-amenities-description>
                 <h3 class="about-card__subheading">Room-Specific Amenities</h3>
                 <ul class="about-card__amenities-list">
                   <li class="about-card__amenity">
@@ -226,7 +226,30 @@
                     <span>Personal Fitness Equipment</span>
                   </li>
                 </ul>
-                <a href="#" class="about-card__show-more">Show more</a>
+                <div class="about-card__more" id="amenities-more" data-amenities-more hidden>
+                  <ul class="about-card__amenities-list">
+                    <li class="about-card__amenity">
+                      <i class="fa-solid fa-water"></i>
+                      <span>Private plunge pool</span>
+                    </li>
+                    <li class="about-card__amenity">
+                      <i class="fa-solid fa-umbrella-beach"></i>
+                      <span>Beach cabana service</span>
+                    </li>
+                    <li class="about-card__amenity">
+                      <i class="fa-solid fa-wine-glass"></i>
+                      <span>Sunset cocktail service</span>
+                    </li>
+                    <li class="about-card__amenity">
+                      <i class="fa-solid fa-music"></i>
+                      <span>In-suite entertainment</span>
+                    </li>
+                  </ul>
+                </div>
+                <button class="about-card__show-more" type="button" data-amenities-toggle aria-expanded="false"
+                  aria-controls="amenities-more">
+                  Show more
+                </button>
               </div>
             </div>
 
