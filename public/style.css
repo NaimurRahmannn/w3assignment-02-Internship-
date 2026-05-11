@@ -524,7 +524,7 @@ body {
     gap: 10px;
 }
 
-.booking-card__field select {
+.booking-card__field input {
     width: 100%;
     height: 42px;
     padding: 0 14px;
@@ -727,7 +727,7 @@ body {
    FOCUS STATES
 ========================= */
 
-.booking-card__field select:focus-visible,
+.booking-card__field input:focus-visible,
 .booking-card__button:focus-visible,
 .booking-card__brand-link:focus-visible,
 .booking-card__phone:focus-visible,

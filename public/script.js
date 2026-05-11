@@ -42,6 +42,72 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  const bookingCard = document.querySelector(".booking-card");
+  if (bookingCard) {
+    const checkinInput = bookingCard.querySelector("[data-checkin-input]");
+    const checkoutInput = bookingCard.querySelector("[data-checkout-input]");
+    const pricePerNightLabel = bookingCard.querySelector("[data-price-per-night]");
+    const totalPriceLabel = bookingCard.querySelector("[data-total-price]");
+    const nightlyRate = Number(bookingCard.dataset.nightlyRate) || 0;
+
+    const formatCurrency = (value) =>
+      `USD $${value.toLocaleString("en-US", {
+        maximumFractionDigits: 0,
+        useGrouping: false
+      })}`;
+    const setTotalPrice = (nights) => {
+      if (!totalPriceLabel) {
+        return;
+      }
+      const total = nights > 0 ? nights * nightlyRate : nightlyRate;
+      totalPriceLabel.textContent = formatCurrency(total);
+    };
+
+    if (pricePerNightLabel) {
+      pricePerNightLabel.textContent = formatCurrency(nightlyRate);
+    }
+    setTotalPrice(1);
+
+    if (checkinInput && checkoutInput && window.HotelDatepicker && window.fecha) {
+      const separator = " - ";
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const datepicker = new HotelDatepicker(checkinInput, {
+        format: "MMM D, YYYY",
+        separator,
+        startDate: today,
+        minNights: 1,
+        selectForward: true,
+        autoClose: true,
+        getValue: () => {
+          if (checkinInput.value && checkoutInput.value) {
+            return `${checkinInput.value}${separator}${checkoutInput.value}`;
+          }
+          return "";
+        },
+        setValue: (_value, start, end) => {
+          checkinInput.value = start || "";
+          checkoutInput.value = end || "";
+        },
+        onSelectRange: () => {
+          const nights = datepicker.getNights();
+          if (nights > 0) {
+            setTotalPrice(nights);
+          }
+        }
+      });
+
+      const openPicker = () => datepicker.open();
+      checkoutInput.addEventListener("focus", openPicker);
+      checkoutInput.addEventListener("click", openPicker);
+
+      checkinInput.addEventListener("afterClear", () => {
+        setTotalPrice(1);
+      });
+    }
+  }
+
   if (!openButtons.length || !modal) {
     return;
   }

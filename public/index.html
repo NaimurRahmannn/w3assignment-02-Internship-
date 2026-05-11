@@ -7,6 +7,7 @@
   <title>Santury Cap cana</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/hotel-datepicker@4.12.4/dist/css/hotel-datepicker.css">
 </head>
 
 <body>
@@ -272,7 +273,7 @@
         <!-- Bookig Card Check Villa Availability -->
 
 
-        <aside class="booking-card" aria-label="Check villa availability">
+        <aside class="booking-card" aria-label="Check villa availability" data-nightly-rate="2026">
           <div class="booking-card__inner">
             <h2 class="booking-card__title">Check Villa Availability</h2>
 
@@ -280,16 +281,30 @@
               <div class="booking-card__dates">
                 <label class="booking-card__field">
                   <span class="sr-only">Check-in date</span>
-                  <select aria-label="Check-in date">
-                    <option>Jun 26</option>
-                  </select>
+                  <input
+                    id="checkin-date"
+                    class="booking-card__input"
+                    type="text"
+                    aria-label="Check-in date"
+                    placeholder="Check-in"
+                    autocomplete="off"
+                    readonly
+                    data-checkin-input
+                  />
                 </label>
 
                 <label class="booking-card__field">
                   <span class="sr-only">Check-out date</span>
-                  <select aria-label="Check-out date">
-                    <option>Jun 29</option>
-                  </select>
+                  <input
+                    id="checkout-date"
+                    class="booking-card__input"
+                    type="text"
+                    aria-label="Check-out date"
+                    placeholder="Check-out"
+                    autocomplete="off"
+                    readonly
+                    data-checkout-input
+                  />
                 </label>
               </div>
 
@@ -301,11 +316,11 @@
               <div class="booking-card__pricing">
                 <div class="booking-card__row">
                   <span>Price Per Night</span>
-                  <strong>USD $600</strong>
+                  <strong data-price-per-night>USD $2026</strong>
                 </div>
                 <div class="booking-card__row booking-card__row--total">
                   <span>Total Price</span>
-                  <strong>USD $600</strong>
+                  <strong data-total-price>USD $2026</strong>
                 </div>
               </div>
 
@@ -1274,6 +1289,8 @@
     </div>
   </div>
 
+  <script src="https://unpkg.com/fecha@4.2.3/dist/fecha.min.js" defer></script>
+  <script src="https://unpkg.com/hotel-datepicker@4.12.4/dist/js/hotel-datepicker.min.js" defer></script>
   <script src="script.js" defer></script>
 </body>
 
