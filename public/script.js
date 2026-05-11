@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modal = document.querySelector("#gallery-modal");
 
   // About section expand/collapse toggle.
+  
   const aboutSection = document.querySelector("[data-about-description]");
   if (aboutSection) {
     const moreContent = aboutSection.querySelector("[data-about-more]");
@@ -23,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Amenities list expand/collapse toggle.
+
   const amenitiesSection = document.querySelector("[data-amenities-description]");
   if (amenitiesSection) {
     const moreAmenities = amenitiesSection.querySelector("[data-amenities-more]");
@@ -41,6 +43,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+
+
+
+// FAQ section expand/collapse toggle. 
+
 
   const faqItems = document.querySelectorAll(".faq-item");
   if (faqItems.length) {
@@ -171,6 +178,33 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sortSelect && grid) {
       const imageBase = "https://beta.imgservice.rentbyowner.com/640x300/";
       const mobileQuery = window.matchMedia("(max-width: 768px)");
+      const favoritesKey = "nearbyFavorites";
+
+      const loadFavorites = () => {
+        try {
+          const stored = JSON.parse(localStorage.getItem(favoritesKey) || "[]");
+          if (!Array.isArray(stored)) {
+            return new Set();
+          }
+          return new Set(stored.filter((id) => typeof id === "string"));
+        } catch (error) {
+          console.error("Failed to load favorites:", error);
+          return new Set();
+        }
+      };
+      const saveFavorites = (favorites) => {
+        try {
+          localStorage.setItem(favoritesKey, JSON.stringify([...favorites]));
+        } catch (error) {
+          console.error("Failed to save favorites:", error);
+        }
+      };
+      const setFavoriteButtonState = (button, isFavorite) => {
+        button.setAttribute("aria-pressed", String(isFavorite));
+        button.classList.toggle("is-active", isFavorite);
+      };
+
+      const favorites = loadFavorites();
 
       const getLimit = () => (mobileQuery.matches ? 4 : 6);
       const getSortParam = (value) => {
@@ -257,6 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const property = item.Property || {};
         const geo = item.GeoInfo || {};
         const partner = item.Partner || {};
+        const propertyId = item.ID ? String(item.ID) : "";
 
         const article = document.createElement("article");
         article.className = "resort-card";
@@ -279,10 +314,32 @@ document.addEventListener("DOMContentLoaded", () => {
         const actions = document.createElement("div");
         actions.className = "resort-actions";
         actions.setAttribute("aria-label", "Resort quick actions");
-        actions.innerHTML =
-          '<button type="button" aria-label="Eco friendly"><i class="fa-solid fa-leaf"></i></button>' +
-          '<button type="button" aria-label="View location"><i class="fa-solid fa-location-dot"></i></button>' +
-          '<button type="button" aria-label="Save resort"><i class="fa-regular fa-heart"></i></button>';
+        const ecoButton = document.createElement("button");
+        ecoButton.type = "button";
+        ecoButton.setAttribute("aria-label", "Eco friendly");
+        ecoButton.innerHTML = '<i class="fa-solid fa-leaf"></i>';
+
+
+        const locationButton = document.createElement("button");
+        locationButton.type = "button";
+        locationButton.setAttribute("aria-label", "View location");
+        locationButton.innerHTML = '<i class="fa-solid fa-location-dot"></i>';
+
+
+        const favoriteButton = document.createElement("button");
+        favoriteButton.type = "button";
+        favoriteButton.setAttribute("aria-label", "Save resort");
+        favoriteButton.setAttribute("data-favorite", "true");
+        favoriteButton.innerHTML = '<i class="fa-regular fa-heart"></i>';
+        if (propertyId) {
+          favoriteButton.setAttribute("data-property-id", propertyId);
+          setFavoriteButtonState(favoriteButton, favorites.has(propertyId));
+        } else {
+          favoriteButton.disabled = true;
+          favoriteButton.setAttribute("aria-disabled", "true");
+        }
+
+        actions.append(ecoButton, locationButton, favoriteButton);
         media.append(actions);
 
         const body = document.createElement("div");
@@ -357,6 +414,26 @@ document.addEventListener("DOMContentLoaded", () => {
       fetchProperties(sortSelect.value);
       sortSelect.addEventListener("change", (event) => {
         fetchProperties(event.target.value);
+      });
+     // Event delegation for favorite buttons.
+
+      grid.addEventListener("click", (event) => {
+        const favoriteButton = event.target.closest("[data-favorite]");
+        if (!favoriteButton || !grid.contains(favoriteButton)) {
+          return;
+        }
+        const propertyId = favoriteButton.getAttribute("data-property-id");
+        if (!propertyId) {
+          return;
+        }
+        const isFavorite = !favorites.has(propertyId);
+        if (isFavorite) {
+          favorites.add(propertyId);
+        } else {
+          favorites.delete(propertyId);
+        }
+        saveFavorites(favorites);
+        setFavoriteButtonState(favoriteButton, isFavorite);
       });
     }
   }

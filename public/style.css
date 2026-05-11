@@ -4886,6 +4886,12 @@ video {
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
+.nearby-section .resort-actions button.is-active,
+.nearby-section .resort-actions button[data-favorite][aria-pressed="true"] {
+  background: #d92929;
+  color: #ffffff;
+}
+
 .nearby-section .resort-actions button:hover {
   background: rgba(0, 60, 63, 0.9);
   transform: translateY(-1px);
