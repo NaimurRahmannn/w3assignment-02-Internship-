@@ -495,7 +495,7 @@ body {
     background-color: #efefef;
     border: 1px solid #c8d0cf;
     border-radius: 30px;
-    overflow: hidden;
+  overflow: visible;
     align-self: start;
 }
 
@@ -522,6 +522,14 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+  position: relative;
+}
+
+.booking-card__dates .datepicker {
+  left: auto;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 20;
 }
 
 .booking-card__field input {
