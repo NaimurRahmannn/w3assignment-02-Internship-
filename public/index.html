@@ -966,7 +966,16 @@
 
       <!-- Right: Sticky Map Aside -->
       <aside class="nearby-map-aside" aria-label="Nearby resorts map">
-        <img src="assets/nearby-map.png" alt="Map with location pins for nearby resorts">
+        <iframe
+          title="Nearby resorts map"
+          class="nearby-map-embed"
+          data-map-embed
+          data-map-location="Sanctuary Cap Cana"
+          src="https://www.google.com/maps?q=Sanctuary%20Cap%20Cana&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
       </aside>
 
     </div>
@@ -1158,6 +1167,7 @@
 
   <script src="https://unpkg.com/fecha@4.2.3/dist/fecha.min.js" defer></script>
   <script src="https://unpkg.com/hotel-datepicker@4.12.4/dist/js/hotel-datepicker.min.js" defer></script>
+  <script src="/maps-config.js" defer></script>
   <script src="script.js" defer></script>
 </body>
 

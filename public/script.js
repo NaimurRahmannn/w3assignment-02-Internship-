@@ -174,11 +174,45 @@ document.addEventListener("DOMContentLoaded", () => {
   if (nearbySection) {
     const sortSelect = nearbySection.querySelector("[data-nearby-sort]");
     const grid = nearbySection.querySelector("[data-nearby-grid]");
+    const mapFrame = nearbySection.querySelector("[data-map-embed]");
+    const mapAside = nearbySection.querySelector(".nearby-map-aside");
+    const leftColumn = nearbySection.querySelector(".nearby-left");
+    const desktopQuery = window.matchMedia("(min-width: 1200px)");
 
     if (sortSelect && grid) {
       const imageBase = "https://beta.imgservice.rentbyowner.com/640x300/";
       const mobileQuery = window.matchMedia("(max-width: 768px)");
       const favoritesKey = "nearbyFavorites";
+      const setMapEmbedSource = () => {
+        if (!mapFrame) {
+          return;
+        }
+        const location = mapFrame.dataset.mapLocation || "Sanctuary Cap Cana";
+        const apiKey = window.GOOGLE_MAPS_API_KEY;
+
+        if (apiKey) {
+          const src = new URL("https://www.google.com/maps/embed/v1/place");
+          src.searchParams.set("key", apiKey);
+          src.searchParams.set("q", location);
+          mapFrame.src = src.toString();
+          return;
+        }
+
+        const fallback = new URL("https://www.google.com/maps");
+        fallback.searchParams.set("q", location);
+        fallback.searchParams.set("output", "embed");
+        mapFrame.src = fallback.toString();
+      };
+      const syncMapHeight = () => {
+        if (!mapAside || !leftColumn) {
+          return;
+        }
+        if (!desktopQuery.matches) {
+          mapAside.style.height = "";
+          return;
+        }
+        mapAside.style.height = `${leftColumn.offsetHeight}px`;
+      };
 
       const loadFavorites = () => {
         try {
@@ -286,6 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
         status.className = "resort-grid__status";
         status.textContent = message;
         grid.append(status);
+        syncMapHeight();
       };
       const buildCard = (item) => {
         const property = item.Property || {};
@@ -383,6 +418,7 @@ document.addEventListener("DOMContentLoaded", () => {
         items.forEach((item) => {
           grid.append(buildCard(item));
         });
+        syncMapHeight();
       };
       const fetchProperties = async (sortValue) => {
         const sortParam = getSortParam(sortValue);
@@ -411,6 +447,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!sortSelect.value) {
         sortSelect.value = "most-popular";
       }
+      setMapEmbedSource();
+      window.addEventListener("resize", syncMapHeight);
       fetchProperties(sortSelect.value);
       sortSelect.addEventListener("change", (event) => {
         fetchProperties(event.target.value);

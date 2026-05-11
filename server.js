@@ -7,6 +7,57 @@ const PORT = 3000;
 
 app.use(express.static(path.join(__dirname, "public")));
 
+const envFilePath = path.join(__dirname, ".env");
+
+function readEnvValue(key) {
+  if (!fs.existsSync(envFilePath)) {
+    return "";
+  }
+
+  const lines = fs.readFileSync(envFilePath, "utf8").split(/\r?\n/);
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+    const separatorIndex = trimmed.indexOf("=");
+    if (separatorIndex === -1) {
+      continue;
+    }
+    const envKey = trimmed.slice(0, separatorIndex).trim();
+    if (envKey !== key) {
+      continue;
+    }
+    let value = trimmed.slice(separatorIndex + 1).trim();
+    if (
+      (value.startsWith("\"") && value.endsWith("\"")) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    return value;
+  }
+
+  return "";
+}
+
+function getMapsApiKey() {
+  return (
+    process.env.GOOGLE_MAPS_API_KEY ||
+    process.env["Google Maps API Key"] ||
+    readEnvValue("GOOGLE_MAPS_API_KEY") ||
+    readEnvValue("Google Maps API Key") ||
+    ""
+  );
+}
+
+app.get("/maps-config.js", (req, res) => {
+  const apiKey = getMapsApiKey();
+  res.type("application/javascript");
+  res.send(`window.GOOGLE_MAPS_API_KEY=${JSON.stringify(apiKey)};`);
+});
+
 function readJson(filename) {
   const filePath = path.join(__dirname, "data", filename);
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
