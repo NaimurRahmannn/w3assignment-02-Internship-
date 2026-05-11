@@ -2500,6 +2500,10 @@ h2 {
   padding: 0;
 }
 
+.resort-grid .resort-card {
+  cursor: pointer;
+}
+
 .resort-card  img {
   display: block;
    width: 100%;
