@@ -2504,6 +2504,12 @@ h2 {
   cursor: pointer;
 }
 
+.resort-grid .resort-card.is-map-active {
+  outline: 2.5px solid red;
+  outline-offset: -2px;
+  box-shadow: 0 10px 22px rgba(14, 86, 94, 0.22);
+}
+
 .resort-card  img {
   display: block;
    width: 100%;

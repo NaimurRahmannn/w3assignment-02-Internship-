@@ -197,12 +197,14 @@ document.addEventListener("DOMContentLoaded", () => {
       let mapMarker = null;
       let propertyMarkers = [];
       let markerByKey = new Map();
+      let mapCardByKey = new Map();
       let hasPropertyMarkers = false;
       let pendingProperties = null;
       let activeMarker = null;
       let activeMarkerKey = "";
       let pendingHoverKey = "";
       let currentHoverCard = null;
+      let activeCard = null;
       let highlightIcon = null;
       let mapsPromise = null;
       const loadGoogleMaps = (apiKey) => {
@@ -261,6 +263,38 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         activeMarker = null;
         activeMarkerKey = "";
+      };
+
+      // Card highlighting based on map interactions and vice versa.
+      const setCardHighlight = (card, isActive) => {
+        if (!card) {
+          return;
+        }
+        card.classList.toggle("is-map-active", isActive);
+      };
+      const clearCardHighlight = () => {
+        if (activeCard) {
+          setCardHighlight(activeCard, false);
+        }
+        activeCard = null;
+      };
+      const highlightCardByKey = (key, options = {}) => {
+        if (!key) {
+          clearCardHighlight();
+          return;
+        }
+        const card = mapCardByKey.get(key);
+        if (!card) {
+          return;
+        }
+        if (activeCard && activeCard !== card) {
+          setCardHighlight(activeCard, false);
+        }
+        setCardHighlight(card, true);
+        activeCard = card;
+        if (options.scroll) {
+          card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
       };
       const highlightMarkerByKey = (key) => {
         if (!key) {
@@ -363,6 +397,10 @@ document.addEventListener("DOMContentLoaded", () => {
           propertyMarkers.push(marker);
           if (markerKey) {
             markerByKey.set(markerKey, marker);
+            marker.addListener("click", () => {
+              highlightMarkerByKey(markerKey);
+              highlightCardByKey(markerKey, { scroll: true });
+            });
           }
           bounds.extend(position);
           markerCount += 1;
@@ -415,6 +453,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         mapInstance.addListener("zoom_changed", syncMapZoom);
+        mapInstance.addListener("click", clearCardHighlight);
 
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ address: location }, (results, status) => {
@@ -566,6 +605,7 @@ document.addEventListener("DOMContentLoaded", () => {
         status.textContent = message;
         grid.append(status);
         syncMapHeight();
+        clearCardHighlight();
         clearHoverCard();
         clearPropertyMarkers();
       };
@@ -580,6 +620,7 @@ document.addEventListener("DOMContentLoaded", () => {
         article.className = "resort-card";
         if (markerKey) {
           article.dataset.markerKey = markerKey;
+          mapCardByKey.set(markerKey, article);
         }
 
         const media = document.createElement("div");
@@ -666,6 +707,8 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       const renderProperties = (items) => {
         grid.innerHTML = "";
+        mapCardByKey.clear();
+        clearCardHighlight();
         clearHoverCard();
         items.forEach((item) => {
           grid.append(buildCard(item));
