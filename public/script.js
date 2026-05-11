@@ -41,6 +41,32 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+// Review cards expand/collapse toggle.
+
+
+  const reviewCards = document.querySelectorAll(".review-card");
+  if (reviewCards.length) {
+    reviewCards.forEach((card) => {
+      const moreContent = card.querySelector("[data-review-more]");
+      const toggleButton = card.querySelector("[data-review-toggle]");
+
+      if (!moreContent || !toggleButton) {
+        return;
+      }
+
+      const setExpanded = (expanded) => {
+        moreContent.hidden = !expanded;
+        toggleButton.textContent = expanded ? "Show less" : "Show more";
+        toggleButton.setAttribute("aria-expanded", String(expanded));
+      };
+
+      setExpanded(false);
+      toggleButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        setExpanded(moreContent.hidden);
+      });
+    });
+  }
 
   const bookingCard = document.querySelector(".booking-card");
   if (bookingCard) {
