@@ -41,6 +41,34 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+
+  const faqItems = document.querySelectorAll(".faq-item");
+  if (faqItems.length) {
+    faqItems.forEach((item) => {
+      const toggle = item.querySelector(".faq-label");
+      const checkbox = item.querySelector(".faq-toggle");
+
+      if (!toggle) {
+        return;
+      }
+
+      const setExpanded = (expanded) => {
+        item.classList.toggle("is-open", expanded);
+        if (checkbox) {
+          checkbox.checked = expanded;
+        }
+        toggle.setAttribute("aria-expanded", String(expanded));
+      };
+
+      const initialOpen = checkbox ? checkbox.checked : item.classList.contains("is-open");
+      setExpanded(initialOpen);
+
+      toggle.addEventListener("click", (event) => {
+        event.preventDefault();
+        setExpanded(!item.classList.contains("is-open"));
+      });
+    });
+  }
 // Review cards expand/collapse toggle.
 
 

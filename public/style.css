@@ -2105,11 +2105,13 @@ h2 {
   content: '+';
 }
 
-.faq-toggle:checked + .faq-label .faq-icon::after {
+.faq-toggle:checked + .faq-label .faq-icon::after,
+.faq-item.is-open .faq-icon::after {
   content: '−';
 }
 
-.faq-toggle:checked + .faq-label {
+.faq-toggle:checked + .faq-label,
+.faq-item.is-open .faq-label {
   background: #f2f3f5;
 }
 
@@ -2127,7 +2129,8 @@ h2 {
   margin: 0;
 }
 
-.faq-toggle:checked ~ .faq-answer {
+.faq-toggle:checked ~ .faq-answer,
+.faq-item.is-open .faq-answer {
   max-height: 400px;
   padding: 0 24px 20px;
 }
