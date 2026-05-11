@@ -195,6 +195,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const clampZoom = (value) => Math.min(20, Math.max(2, value));
       let mapInstance = null;
       let mapMarker = null;
+      let propertyMarkers = [];
+      let hasPropertyMarkers = false;
+      let pendingProperties = null;
       let mapsPromise = null;
       const loadGoogleMaps = (apiKey) => {
         if (window.google && window.google.maps) {
@@ -213,6 +216,72 @@ document.addEventListener("DOMContentLoaded", () => {
           document.head.appendChild(script);
         });
         return mapsPromise;
+      };
+      const clearPropertyMarkers = () => {
+        propertyMarkers.forEach((marker) => marker.setMap(null));
+        propertyMarkers = [];
+        hasPropertyMarkers = false;
+      };
+      const syncMapZoom = () => {
+        if (!mapInstance) {
+          return;
+        }
+        const currentZoom = mapInstance.getZoom();
+        if (Number.isFinite(currentZoom)) {
+          mapZoom = currentZoom;
+          if (mapCanvas) {
+            mapCanvas.dataset.mapZoom = String(mapZoom);
+          }
+        }
+      };
+      const addPropertyMarkers = (items) => {
+        if (!Array.isArray(items)) {
+          return;
+        }
+        if (!mapInstance || !window.google || !window.google.maps) {
+          pendingProperties = items;
+          return;
+        }
+
+        clearPropertyMarkers();
+
+        const bounds = new window.google.maps.LatLngBounds();
+        let markerCount = 0;
+        let lastPosition = null;
+
+        items.forEach((item) => {
+          const geo = item.GeoInfo || {};
+          const property = item.Property || {};
+          const lat = Number.parseFloat(geo.Lat);
+          const lng = Number.parseFloat(geo.Lng);
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return;
+          }
+          const position = { lat, lng };
+          const marker = new window.google.maps.Marker({
+            map: mapInstance,
+            position,
+            title: property.PropertyName || "Property"
+          });
+          propertyMarkers.push(marker);
+          bounds.extend(position);
+          markerCount += 1;
+          lastPosition = position;
+        });
+
+        hasPropertyMarkers = markerCount > 0;
+        if (hasPropertyMarkers && mapMarker) {
+          mapMarker.setMap(null);
+          mapMarker = null;
+        }
+        if (markerCount === 1 && lastPosition) {
+          mapInstance.setCenter(lastPosition);
+          mapInstance.setZoom(mapZoom);
+          syncMapZoom();
+        } else if (markerCount > 1) {
+          mapInstance.fitBounds(bounds, 60);
+          window.google.maps.event.addListenerOnce(mapInstance, "idle", syncMapZoom);
+        }
       };
       const initMap = async () => {
         if (!mapCanvas) {
@@ -241,8 +310,13 @@ document.addEventListener("DOMContentLoaded", () => {
           fullscreenControl: false
         });
 
+        mapInstance.addListener("zoom_changed", syncMapZoom);
+
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ address: location }, (results, status) => {
+          if (hasPropertyMarkers) {
+            return;
+          }
           if (status === "OK" && results && results[0]) {
             const position = results[0].geometry.location;
             mapInstance.setCenter(position);
@@ -255,6 +329,11 @@ document.addEventListener("DOMContentLoaded", () => {
             });
           }
         });
+
+        if (pendingProperties) {
+          addPropertyMarkers(pendingProperties);
+          pendingProperties = null;
+        }
       };
       const updateMapZoom = (delta) => {
         mapZoom = clampZoom(mapZoom + delta);
@@ -383,6 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
         status.textContent = message;
         grid.append(status);
         syncMapHeight();
+        clearPropertyMarkers();
       };
       const buildCard = (item) => {
         const property = item.Property || {};
@@ -481,6 +561,7 @@ document.addEventListener("DOMContentLoaded", () => {
           grid.append(buildCard(item));
         });
         syncMapHeight();
+        addPropertyMarkers(items);
       };
       const fetchProperties = async (sortValue) => {
         const sortParam = getSortParam(sortValue);
