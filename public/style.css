@@ -2480,6 +2480,13 @@ h2 {
   gap: 12px;
 }
 
+.resort-grid__status {
+  grid-column: 1 / -1;
+  margin: 10px 0 0;
+  color: #666;
+  font-size: 13px;
+}
+
 .resort-card {
   overflow: hidden;
   background: #ffffff;

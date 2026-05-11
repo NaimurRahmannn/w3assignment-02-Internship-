@@ -107,6 +107,205 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+// nearby section property loading, sorting, and rendering.
+
+  const nearbySection = document.querySelector(".nearby-section");
+  if (nearbySection) {
+    const sortSelect = nearbySection.querySelector("[data-nearby-sort]");
+    const grid = nearbySection.querySelector("[data-nearby-grid]");
+
+    if (sortSelect && grid) {
+      const imageBase = "https://beta.imgservice.rentbyowner.com/640x300/";
+      const mobileQuery = window.matchMedia("(max-width: 768px)");
+
+      const getLimit = () => (mobileQuery.matches ? 4 : 6);
+      const getSortParam = (value) => {
+        if (value === "highest-price") {
+          return "highest-price";
+        }
+        if (value === "lowest-price") {
+          return "lowest-price";
+        }
+        return "most-popular";
+      };
+      const formatPrice = (value) => {
+        const numeric = Number(value);
+        if (!Number.isFinite(numeric) || numeric <= 0) {
+          return "From $--";
+        }
+        return `From $${numeric.toLocaleString("en-US", {
+          maximumFractionDigits: 0
+        })}`;
+      };
+      const buildImageUrl = (featureImage) => {
+        if (featureImage && typeof featureImage === "string") {
+          return `${imageBase}${featureImage}`;
+        }
+        return "assets/nearby-resort-1.png";
+      };
+      const getAmenitiesText = (property) => {
+        if (Array.isArray(property.TopAmenities) && property.TopAmenities.length) {
+          return property.TopAmenities.slice(0, 3)
+            .map((amenity) => amenity.Name)
+            .filter(Boolean)
+            .join(" / ");
+        }
+        if (property.Amenities && typeof property.Amenities === "object") {
+          return Object.values(property.Amenities)
+            .filter(Boolean)
+            .slice(0, 3)
+            .join(" / ");
+        }
+        return "Amenities available";
+      };
+      const getLocationText = (geo) => {
+        if (geo.Display) {
+          return geo.Display;
+        }
+        const city = geo.City || "";
+        const country = geo.Country || "";
+        return [city, country].filter(Boolean).join(", ") || "Location details";
+      };
+      const getBrand = (url) => {
+        if (!url) {
+          return { label: "Booking.com", className: "booking" };
+        }
+        const normalized = url.toLowerCase();
+        if (normalized.includes("vrbo")) {
+          return { label: "Vrbo", className: "vrbo" };
+        }
+        if (normalized.includes("expedia")) {
+          return { label: "Expedia", className: "expedia" };
+        }
+        return { label: "Booking.com", className: "booking" };
+      };
+      const getRatingText = (property) => {
+        const score = Number(property.ReviewScore);
+        const reviews = Number(property.Counts && property.Counts.Reviews);
+        if (Number.isFinite(score) && score > 0) {
+          const normalized = score > 5 ? score / 2 : score;
+          const rating = normalized.toFixed(1);
+          if (Number.isFinite(reviews) && reviews > 0) {
+            return `${rating} (${reviews} Reviews)`;
+          }
+          return rating;
+        }
+        return "New";
+      };
+      const setStatus = (message) => {
+        grid.innerHTML = "";
+        const status = document.createElement("p");
+        status.className = "resort-grid__status";
+        status.textContent = message;
+        grid.append(status);
+      };
+      const buildCard = (item) => {
+        const property = item.Property || {};
+        const geo = item.GeoInfo || {};
+        const partner = item.Partner || {};
+
+        const article = document.createElement("article");
+        article.className = "resort-card";
+
+        const media = document.createElement("div");
+        media.className = "resort-media";
+
+        const image = document.createElement("img");
+        image.src = buildImageUrl(property.FeatureImage);
+        image.alt = property.PropertyName
+          ? `${property.PropertyName} property`
+          : "Nearby resort";
+        media.append(image);
+
+        const priceBadge = document.createElement("span");
+        priceBadge.className = "resort-price-badge";
+        priceBadge.textContent = formatPrice(property.CachePrice ?? property.Price);
+        media.append(priceBadge);
+
+        const actions = document.createElement("div");
+        actions.className = "resort-actions";
+        actions.setAttribute("aria-label", "Resort quick actions");
+        actions.innerHTML =
+          '<button type="button" aria-label="Eco friendly"><i class="fa-solid fa-leaf"></i></button>' +
+          '<button type="button" aria-label="View location"><i class="fa-solid fa-location-dot"></i></button>' +
+          '<button type="button" aria-label="Save resort"><i class="fa-regular fa-heart"></i></button>';
+        media.append(actions);
+
+        const body = document.createElement("div");
+        body.className = "resort-body";
+
+        const meta = document.createElement("div");
+        meta.className = "resort-meta";
+
+        const rating = document.createElement("span");
+        rating.innerHTML = `<b>&#9733;</b> ${getRatingText(property)}`;
+        const type = document.createElement("span");
+        type.textContent = property.PropertyType || "Resort";
+        meta.append(rating, type);
+
+        const title = document.createElement("h2");
+        title.textContent = property.PropertyName || "Property";
+
+        const amenities = document.createElement("p");
+        amenities.textContent = getAmenitiesText(property);
+
+        const location = document.createElement("p");
+        location.textContent = getLocationText(geo);
+
+        const footer = document.createElement("footer");
+        const brand = getBrand(partner.URL);
+        const brandSpan = document.createElement("span");
+        brandSpan.className = `brand ${brand.className}`;
+        brandSpan.textContent = brand.label;
+        const link = document.createElement("a");
+        link.href = partner.URL || "#";
+        link.textContent = "View Availability";
+        footer.append(brandSpan, link);
+
+        body.append(meta, title, amenities, location, footer);
+        article.append(media, body);
+
+        return article;
+      };
+      const renderProperties = (items) => {
+        grid.innerHTML = "";
+        items.forEach((item) => {
+          grid.append(buildCard(item));
+        });
+      };
+      const fetchProperties = async (sortValue) => {
+        const sortParam = getSortParam(sortValue);
+        const params = new URLSearchParams();
+        params.set("limit", String(getLimit()));
+        params.set(sortParam, "true");
+
+        setStatus("Loading properties...");
+        try {
+          const response = await fetch(`/get-property?${params.toString()}`);
+          if (!response.ok) {
+            throw new Error("Property request failed");
+          }
+          const data = await response.json();
+          if (!Array.isArray(data) || data.length === 0) {
+            setStatus("No properties found.");
+            return;
+          }
+          renderProperties(data);
+        } catch (error) {
+          console.error("Nearby properties load failed:", error);
+          setStatus("Unable to load properties.");
+        }
+      };
+
+      if (!sortSelect.value) {
+        sortSelect.value = "most-popular";
+      }
+      fetchProperties(sortSelect.value);
+      sortSelect.addEventListener("change", (event) => {
+        fetchProperties(event.target.value);
+      });
+    }
+  }
 
   if (!openButtons.length || !modal) {
     return;
