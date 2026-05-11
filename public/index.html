@@ -966,16 +966,20 @@
 
       <!-- Right: Sticky Map Aside -->
       <aside class="nearby-map-aside" aria-label="Nearby resorts map">
-        <iframe
-          title="Nearby resorts map"
+        <div class="nearby-map-controls" aria-label="Map zoom controls">
+          <button class="nearby-map-control" type="button" data-map-zoom-in aria-label="Zoom in">
+            +
+          </button>
+          <button class="nearby-map-control" type="button" data-map-zoom-out aria-label="Zoom out">
+            -
+          </button>
+        </div>
+        <div
           class="nearby-map-embed"
-          data-map-embed
+          data-map-canvas
           data-map-location="Sanctuary Cap Cana"
-          src="https://www.google.com/maps?q=Sanctuary%20Cap%20Cana&output=embed"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          allowfullscreen
-        ></iframe>
+          data-map-zoom="13"
+        ></div>
       </aside>
 
     </div>

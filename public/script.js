@@ -174,34 +174,96 @@ document.addEventListener("DOMContentLoaded", () => {
   if (nearbySection) {
     const sortSelect = nearbySection.querySelector("[data-nearby-sort]");
     const grid = nearbySection.querySelector("[data-nearby-grid]");
-    const mapFrame = nearbySection.querySelector("[data-map-embed]");
+    const mapCanvas = nearbySection.querySelector("[data-map-canvas]");
     const mapAside = nearbySection.querySelector(".nearby-map-aside");
     const leftColumn = nearbySection.querySelector(".nearby-left");
     const desktopQuery = window.matchMedia("(min-width: 1200px)");
+    const zoomInButton = nearbySection.querySelector("[data-map-zoom-in]");
+    const zoomOutButton = nearbySection.querySelector("[data-map-zoom-out]");
 
     if (sortSelect && grid) {
       const imageBase = "https://beta.imgservice.rentbyowner.com/640x300/";
       const mobileQuery = window.matchMedia("(max-width: 768px)");
       const favoritesKey = "nearbyFavorites";
-      const setMapEmbedSource = () => {
-        if (!mapFrame) {
+
+    
+
+      let mapZoom = Number.parseInt(mapCanvas?.dataset.mapZoom || "", 10);
+      if (!Number.isFinite(mapZoom)) {
+        mapZoom = 13;
+      }
+      const clampZoom = (value) => Math.min(20, Math.max(2, value));
+      let mapInstance = null;
+      let mapMarker = null;
+      let mapsPromise = null;
+      const loadGoogleMaps = (apiKey) => {
+        if (window.google && window.google.maps) {
+          return Promise.resolve();
+        }
+        if (mapsPromise) {
+          return mapsPromise;
+        }
+        mapsPromise = new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}`;
+          script.async = true;
+          script.defer = true;
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Maps script failed to load"));
+          document.head.appendChild(script);
+        });
+        return mapsPromise;
+      };
+      const initMap = async () => {
+        if (!mapCanvas) {
           return;
         }
-        const location = mapFrame.dataset.mapLocation || "Sanctuary Cap Cana";
         const apiKey = window.GOOGLE_MAPS_API_KEY;
-
-        if (apiKey) {
-          const src = new URL("https://www.google.com/maps/embed/v1/place");
-          src.searchParams.set("key", apiKey);
-          src.searchParams.set("q", location);
-          mapFrame.src = src.toString();
+        if (!apiKey) {
+          mapCanvas.textContent = "Map unavailable";
+          return;
+        }
+        try {
+          await loadGoogleMaps(apiKey);
+        } catch (error) {
+          console.error("Google Maps failed to load:", error);
+          mapCanvas.textContent = "Map unavailable";
           return;
         }
 
-        const fallback = new URL("https://www.google.com/maps");
-        fallback.searchParams.set("q", location);
-        fallback.searchParams.set("output", "embed");
-        mapFrame.src = fallback.toString();
+        const location = mapCanvas.dataset.mapLocation || "Sanctuary Cap Cana";
+        mapInstance = new window.google.maps.Map(mapCanvas, {
+          center: { lat: 18.4906, lng: -68.3639 },
+          zoom: mapZoom,
+          zoomControl: false,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false
+        });
+
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ address: location }, (results, status) => {
+          if (status === "OK" && results && results[0]) {
+            const position = results[0].geometry.location;
+            mapInstance.setCenter(position);
+            if (mapMarker) {
+              mapMarker.setMap(null);
+            }
+            mapMarker = new window.google.maps.Marker({
+              map: mapInstance,
+              position
+            });
+          }
+        });
+      };
+      const updateMapZoom = (delta) => {
+        mapZoom = clampZoom(mapZoom + delta);
+        if (mapCanvas) {
+          mapCanvas.dataset.mapZoom = String(mapZoom);
+        }
+        if (mapInstance) {
+          mapInstance.setZoom(mapZoom);
+        }
       };
       const syncMapHeight = () => {
         if (!mapAside || !leftColumn) {
@@ -447,7 +509,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!sortSelect.value) {
         sortSelect.value = "most-popular";
       }
-      setMapEmbedSource();
+      initMap();
+      if (zoomInButton) {
+        zoomInButton.addEventListener("click", () => updateMapZoom(1));
+      }
+      if (zoomOutButton) {
+        zoomOutButton.addEventListener("click", () => updateMapZoom(-1));
+      }
       window.addEventListener("resize", syncMapHeight);
       fetchProperties(sortSelect.value);
       sortSelect.addEventListener("change", (event) => {

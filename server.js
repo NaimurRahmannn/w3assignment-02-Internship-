@@ -51,7 +51,7 @@ function getMapsApiKey() {
     ""
   );
 }
-
+//maps config endpoint to provide API key to client
 app.get("/maps-config.js", (req, res) => {
   const apiKey = getMapsApiKey();
   res.type("application/javascript");
