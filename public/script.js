@@ -2,6 +2,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const openButtons = document.querySelectorAll("[data-gallery-open]");
   const modal = document.querySelector("#gallery-modal");
 
+  let mapsPromise = null;
+  const loadGoogleMaps = (apiKey) => {
+    if (window.google && window.google.maps) {
+      return Promise.resolve();
+    }
+    if (mapsPromise) {
+      return mapsPromise;
+    }
+    mapsPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Maps script failed to load"));
+      document.head.appendChild(script);
+    });
+    return mapsPromise;
+  };
+
   // About section expand/collapse toggle.
   
   const aboutSection = document.querySelector("[data-about-description]");
@@ -168,6 +188,64 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+
+  const locationSection = document.querySelector(".location-section");
+  if (locationSection) {
+    const mapCanvas = locationSection.querySelector("[data-location-map]");
+    if (mapCanvas) {
+      const apiKey = window.GOOGLE_MAPS_API_KEY;
+      if (!apiKey) {
+        mapCanvas.textContent = "Map unavailable";
+      } else {
+        const fallbackPosition = { lat: 18.4906, lng: -68.3639 };
+        const zoomValue = Number.parseInt(mapCanvas.dataset.mapZoom || "", 10);
+        const mapZoom = Number.isFinite(zoomValue) ? zoomValue : 13;
+
+        loadGoogleMaps(apiKey)
+          .then(() => {
+            const mapInstance = new window.google.maps.Map(mapCanvas, {
+              center: fallbackPosition,
+              zoom: mapZoom,
+              zoomControl: true,
+              mapTypeControl: false,
+              streetViewControl: false,
+              fullscreenControl: false
+            });
+
+            const marker = new window.google.maps.Marker({
+              map: mapInstance
+            });
+
+            const setMarker = (position) => {
+              mapInstance.setCenter(position);
+              marker.setPosition(position);
+            };
+
+            const lat = Number.parseFloat(mapCanvas.dataset.mapLat || "");
+            const lng = Number.parseFloat(mapCanvas.dataset.mapLng || "");
+            if (Number.isFinite(lat) && Number.isFinite(lng)) {
+              setMarker({ lat, lng });
+              return;
+            }
+
+            const location = mapCanvas.dataset.mapLocation || "Sanctuary Cap Cana";
+            const geocoder = new window.google.maps.Geocoder();
+            geocoder.geocode({ address: location }, (results, status) => {
+              if (status === "OK" && results && results[0]) {
+                setMarker(results[0].geometry.location);
+              } else {
+                setMarker(fallbackPosition);
+              }
+            });
+          })
+          .catch((error) => {
+            console.error("Google Maps failed to load:", error);
+            mapCanvas.textContent = "Map unavailable";
+          });
+      }
+    }
+  }
+
 // nearby section property loading, sorting, and rendering.
 
   const nearbySection = document.querySelector(".nearby-section");
@@ -210,25 +288,6 @@ document.addEventListener("DOMContentLoaded", () => {
       let currentHoverCard = null;
       let activeCard = null;
       let highlightIcon = null;
-      let mapsPromise = null;
-      const loadGoogleMaps = (apiKey) => {
-        if (window.google && window.google.maps) {
-          return Promise.resolve();
-        }
-        if (mapsPromise) {
-          return mapsPromise;
-        }
-        mapsPromise = new Promise((resolve, reject) => {
-          const script = document.createElement("script");
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}`;
-          script.async = true;
-          script.defer = true;
-          script.onload = () => resolve();
-          script.onerror = () => reject(new Error("Maps script failed to load"));
-          document.head.appendChild(script);
-        });
-        return mapsPromise;
-      };
       const getHighlightIcon = () => {
         if (!window.google || !window.google.maps) {
           return null;
