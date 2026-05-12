@@ -2735,6 +2735,12 @@ h2 {
     width: 100%;
   }
 
+  /* Hide map type controls when the layout collapses on tablet/mobile
+     so the controls don't remain visible when the map is not rendered */
+  .nearby-map-controls {
+    display: none !important;
+  }
+
   .nearby-map-aside img,
   .nearby-map-embed {
     height: 400px;
