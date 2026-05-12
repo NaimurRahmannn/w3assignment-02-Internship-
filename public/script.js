@@ -821,7 +821,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sortSelect.addEventListener("change", (event) => {
         fetchProperties(event.target.value);
       });
-     // Event delegation for favorite buttons.
+   
 
       grid.addEventListener("click", (event) => {
         // Location button handling.
@@ -834,8 +834,10 @@ document.addEventListener("DOMContentLoaded", () => {
           const markerKey = getCardMarkerKey(card);
           if (markerKey) {
             setSelectedMarkerByKey(markerKey);
+            highlightCardByKey(markerKey);
           } else {
             clearSelectedMarker();
+            clearCardHighlight();
           }
           const position = getCardLocation(card);
           if (position) {
@@ -847,6 +849,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           return;
         }
+        
+        // Event delegation for favorite buttons.
         const favoriteButton = event.target.closest("[data-favorite]");
         if (!favoriteButton || !grid.contains(favoriteButton)) {
           return;
