@@ -2,7 +2,7 @@
 
 This repository is a small Node + Express static site demonstrating a property detail page with a nearby properties list, Google Maps integration, a date picker, and a responsive booking card.
 
-Live demo: https://w3assignment-02-internship.onrender.com/   (did not set the .env Google Maps API Key due to some security reason)
+Live demo: https://w3assignment-02-internship.onrender.com/ (did not set the .env variable Google_Maps_API Key value due to some security reason)
 
 ## Features
 - Nearby properties fetched from server endpoints (`/get-property`).
@@ -19,8 +19,8 @@ Live demo: https://w3assignment-02-internship.onrender.com/   (did not set the .
 1. Clone the repo and change into the project folder:
 
 ```bash
-git clone <your-repo-url>
-cd W3-html-css
+git clone "https://github.com/NaimurRahmannn/w3assignment-02-Internship-.git"
+cd w3assignment-02-Internship-
 ```
 
 2. Install dependencies:
