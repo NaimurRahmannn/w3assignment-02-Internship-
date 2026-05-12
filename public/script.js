@@ -27,11 +27,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const aboutSection = document.querySelector("[data-about-description]");
   if (aboutSection) {
     const moreContent = aboutSection.querySelector("[data-about-more]");
+    const ellipsis = aboutSection.querySelector("[data-about-ellipsis]");
     const toggleButton = aboutSection.querySelector("[data-about-toggle]");
-
+    
     if (moreContent && toggleButton) {
       const setExpanded = (expanded) => {
         moreContent.hidden = !expanded;
+        if (ellipsis) {
+          ellipsis.hidden = expanded;
+        }
         toggleButton.textContent = expanded ? "Show less" : "Show more";
         toggleButton.setAttribute("aria-expanded", String(expanded));
       };
@@ -103,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (reviewCards.length) {
     reviewCards.forEach((card) => {
       const moreContent = card.querySelector("[data-review-more]");
+      const ellipsis = card.querySelector("[data-review-ellipsis]");
       const toggleButton = card.querySelector("[data-review-toggle]");
 
       if (!moreContent || !toggleButton) {
@@ -111,6 +116,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const setExpanded = (expanded) => {
         moreContent.hidden = !expanded;
+        if (ellipsis) {
+          ellipsis.hidden = expanded;
+        }
         toggleButton.textContent = expanded ? "Show less" : "Show more";
         toggleButton.setAttribute("aria-expanded", String(expanded));
       };
