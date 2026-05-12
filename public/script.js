@@ -273,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const desktopQuery = window.matchMedia("(min-width: 1200px)");
     const zoomInButton = nearbySection.querySelector("[data-map-zoom-in]");
     const zoomOutButton = nearbySection.querySelector("[data-map-zoom-out]");
+    const mapTypeButtons = nearbySection.querySelectorAll("[data-map-type]");
 
     if (sortSelect && grid) {
       const imageBase = "https://beta.imgservice.rentbyowner.com/640x300/";
@@ -303,6 +304,20 @@ document.addEventListener("DOMContentLoaded", () => {
       let currentHoverCard = null;
       let activeCard = null;
       let highlightIcon = null;
+      const setMapTypeButtonState = (activeType) => {
+        mapTypeButtons.forEach((button) => {
+          const isActive = button.dataset.mapType === activeType;
+          button.classList.toggle("is-active", isActive);
+          button.setAttribute("aria-pressed", String(isActive));
+        });
+      };
+      const setMapType = (mapType) => {
+        if (!mapInstance) {
+          return;
+        }
+        mapInstance.setMapTypeId(mapType);
+        setMapTypeButtonState(mapType);
+      };
       const getHighlightIcon = () => {
         if (!window.google || !window.google.maps) {
           return null;
@@ -586,6 +601,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         mapInstance.addListener("zoom_changed", syncMapZoom);
         mapInstance.addListener("click", clearCardHighlight);
+        mapInstance.addListener("maptypeid_changed", () => {
+          setMapTypeButtonState(mapInstance.getMapTypeId());
+        });
+
+        setMapTypeButtonState(mapInstance.getMapTypeId() || "roadmap");
+
+        mapTypeButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const mapType = button.dataset.mapType;
+            if (!mapType) {
+              return;
+            }
+            setMapType(mapType);
+          });
+        });
 
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ address: location }, (results, status) => {

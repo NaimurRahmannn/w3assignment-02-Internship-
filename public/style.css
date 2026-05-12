@@ -2616,9 +2616,9 @@ h2 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 100px;
+  min-width: 72px;
   min-height: 28px;
-  padding: 0 12px;
+  padding: 0 10px;
   background: #f28a00;
   border-radius: 999px;
   color: #ffffff;
@@ -2652,6 +2652,7 @@ h2 {
 
 .nearby-map-embed {
   display: block;
+  position: relative;
   width: 100%;
   height: 100%;
   min-height: 360px;
@@ -2672,35 +2673,43 @@ h2 {
 
 .nearby-map-controls {
   position: absolute;
-  top: 18px;
+  bottom: 18px;
   left: 18px;
-  display: grid;
-  gap: 8px;
-  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  z-index: 3;
 }
 
 .nearby-map-control {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: #ffffff;
-  color: #0f3f44;
-  font-size: 20px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+    min-width: 68px;
+    height: 28px;
+  padding: 0 8px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+    padding: 0 12x;
+  color: gray;
+  font-size: 12px;
+  font-weight: 600;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
 }
 
 .nearby-map-control:hover {
-  background: #f1f5f6;
+  background: #ffffff;
 }
 
 .nearby-map-control:active {
   transform: translateY(1px);
+}
+
+.nearby-map-control.is-active {
+  background: #ffffff;
+  color: #121313;
 }
 
 .nearby-map-control:focus-visible {
@@ -2769,15 +2778,17 @@ h2 {
   }
 
   .nearby-map-controls {
-    top: 12px;
+    bottom: 12px;
     left: 12px;
   }
 
   .nearby-map-control {
-    width: 34px;
+    min-width: 84px;
+    width: auto;
     height: 34px;
+    padding: 0 12px;
     border-radius: 10px;
-    font-size: 18px;
+    font-size: 13px;
   }
 }
 
