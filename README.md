@@ -2,7 +2,7 @@
 
 This repository is a small Node + Express static site demonstrating a property detail page with a nearby properties list, Google Maps integration, a date picker, and a responsive booking card.
 
-Live demo: https://w3assignment-02-internship.onrender.com/
+Live demo: https://w3assignment-02-internship.onrender.com/   (did not set the .env Google Maps API Key due to some security reason)
 
 ## Features
 - Nearby properties fetched from server endpoints (`/get-property`).
@@ -30,13 +30,18 @@ npm install
 
 3. Provide a Google Maps API key. Create a file named `.env` in the project root with the following content (do NOT commit this file):
 
+```env
+GOOGLE_MAPS_API_KEY=your_api_key_here
+```
+
+The server exposes the key to the client at `/maps-config.js` so the site can load the Google Maps script. Keep the key secret in source control and CI/CD environments.
+
 
 4. Start the server:
 
 ```bash
 npm start
-# or
-npm run dev
+
 ```
 
 5. Open http://localhost:3000 in your browser.
@@ -74,12 +79,13 @@ W3-html-css/
 │  ├─ style.css
 │  ├─ script.js
 │  ├─ assets/
-│  │  └─ images/     # property images referenced by the gallery
-│  └─ maps-config.js # served by server to expose API key to client
+│  │─ images/     # property images referenced by the gallery
 └─ node_modules/
 ```
 
 
-## License & Attribution
-This project uses the Google Maps JavaScript API and Hotel Datepicker. Follow their usage and attribution guidelines when deploying to production.
+## Security Notes
+
+⚠️ **Google Maps API Key Exposure**: The current implementation exposes our API key to the client via `/maps-config.js`. While this is acceptable for development with a browser-restricted key, **it is not recommended for production**. 
+
 

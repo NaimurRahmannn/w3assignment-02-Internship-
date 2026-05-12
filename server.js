@@ -53,9 +53,10 @@ function getMapsApiKey() {
 }
 //maps config endpoint to provide API key to client
 app.get("/maps-config.js", (req, res) => {
-  
-  const expose = String(process.env.EXPOSE_MAPS_KEY || "").toLowerCase() === "true";
-  const apiKey = expose ? getMapsApiKey() : "";
+  // SECURITY NOTE: This endpoint exposes the Google Maps API key to the client.
+  // For production, We will use a browser-restricted API key in Google Cloud Console
+  // with HTTP referrer restrictions
+  const apiKey = getMapsApiKey();
   res.type("application/javascript");
   res.send(`window.GOOGLE_MAPS_API_KEY=${JSON.stringify(apiKey)};`);
 });

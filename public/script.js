@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const desktopQuery = window.matchMedia("(min-width: 1200px)");
     const zoomInButton = nearbySection.querySelector("[data-map-zoom-in]");
     const zoomOutButton = nearbySection.querySelector("[data-map-zoom-out]");
-    const mapTypeButtons = nearbySection.querySelectorAll("[data-map-type]");
+    // buttons in the aside overlay (will be queried fresh to keep in-sync)
 
     if (sortSelect && grid) {
       const imageBase = "https://beta.imgservice.rentbyowner.com/640x300/";
@@ -305,7 +305,14 @@ document.addEventListener("DOMContentLoaded", () => {
       let activeCard = null;
       let highlightIcon = null;
       const setMapTypeButtonState = (activeType) => {
-        mapTypeButtons.forEach((button) => {
+        const externalButtons = nearbySection.querySelectorAll("[data-map-type]");
+        externalButtons.forEach((button) => {
+          const isActive = button.dataset.mapType === activeType;
+          button.classList.toggle("is-active", isActive);
+          button.setAttribute("aria-pressed", String(isActive));
+        });
+        const clonedButtons = document.querySelectorAll(".nearby-map-controls--in-map [data-map-type]");
+        clonedButtons.forEach((button) => {
           const isActive = button.dataset.mapType === activeType;
           button.classList.toggle("is-active", isActive);
           button.setAttribute("aria-pressed", String(isActive));
@@ -607,15 +614,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setMapTypeButtonState(mapInstance.getMapTypeId() || "roadmap");
 
-        mapTypeButtons.forEach((button) => {
+        // Wire external buttons (aside overlay)
+        nearbySection.querySelectorAll("[data-map-type]").forEach((button) => {
           button.addEventListener("click", () => {
             const mapType = button.dataset.mapType;
-            if (!mapType) {
-              return;
-            }
+            if (!mapType) return;
             setMapType(mapType);
           });
         });
+
+        // Create a clone of the controls and push into the Google Map controls
+        try {
+          const externalControls = nearbySection.querySelector(".nearby-map-controls");
+          if (externalControls) {
+            const clone = externalControls.cloneNode(true);
+            clone.classList.add("nearby-map-controls--in-map");
+            // wire cloned buttons
+            clone.querySelectorAll("[data-map-type]").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const mapType = btn.dataset.mapType;
+                if (!mapType) return;
+                setMapType(mapType);
+              });
+            });
+            // push into map controls at bottom-left so it appears in fullscreen
+            mapInstance.controls[window.google.maps.ControlPosition.BOTTOM_LEFT].push(clone);
+
+            // hide the external overlay when the map enters fullscreen to avoid duplicates
+            document.addEventListener("fullscreenchange", () => {
+              const fsEl = document.fullscreenElement;
+              if (fsEl === mapCanvas || (fsEl && mapCanvas.contains && mapCanvas.contains(fsEl))) {
+                externalControls.style.display = "none";
+              } else {
+                externalControls.style.display = "";
+              }
+            });
+          }
+        } catch (err) {
+          console.error("Failed to add in-map controls:", err);
+        }
 
         const geocoder = new window.google.maps.Geocoder();
         geocoder.geocode({ address: location }, (results, status) => {
