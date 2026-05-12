@@ -53,7 +53,9 @@ function getMapsApiKey() {
 }
 //maps config endpoint to provide API key to client
 app.get("/maps-config.js", (req, res) => {
-  const apiKey = getMapsApiKey();
+  
+  const expose = String(process.env.EXPOSE_MAPS_KEY || "").toLowerCase() === "true";
+  const apiKey = expose ? getMapsApiKey() : "";
   res.type("application/javascript");
   res.send(`window.GOOGLE_MAPS_API_KEY=${JSON.stringify(apiKey)};`);
 });

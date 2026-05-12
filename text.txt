@@ -1,0 +1,126 @@
+Assignment
+Server
+The site must be served through a HTTP server.
+API Endpoints:
+GET /get-property
+This endpoint accepts the following query parameters:
+most-popular
+Dusting Off JS, TS & Node.js
+13highest-price
+lowest-price
+limit
+Functionality:
+If most-popular=true , return the most_popular.json .
+If highest-price=true , return the highest_price.json .
+If lowest-price=true , return the lowest_price.json .
+If limit is provided, return only the specified number of items
+from the selected dataset.
+Example Request:
+/get-property?most-popular=true&limit=4
+GET /images
+Create an images directory containing 10 property images. The
+endpoint must return these images from the server.
+Example Request:
+/images
+Example Response:
+[
+"/images/image1.jpg",
+"/images/image2.jpg"
+...
+]
+Gallery
+Dusting Off JS, TS & Node.js
+14Requirements
+The View All Images button must open a modal that displays the
+property images fetched from the /images endpoint in a scrollable
+gallery view.
+On mobile devices, the gallery should support touch gestures for
+sliding between images, along with next and previous arrow
+buttons.
+[Reference]
+Acceptance Criteria
+In the desktop version, the background should remain fixed and
+must not scroll while images are being viewed within the modal.
+Clicking outside the modal should close the modal.
+In the mobile slider, the next and previous buttons, as well as touch
+swipe functionality, should work smoothly.
+An image counter must be displayed in the mobile view.
+Description
+Dusting Off JS, TS & Node.js
+15Requirements
+Marked Show more button should expand the section to display a
+longer description.
+Add a Show less button which will collapse the section back to its
+original state.
+Acceptance Criteria
+Expanding and collapsing the section should not break other DOM
+elements.
+Date Picker
+Requirements
+Implement a date range picker using the Hotel Datepicker library.
+Dusting Off JS, TS & Node.js
+16The selected date range should automatically populate the check-
+in and check-out fields.
+Set the initial price to $2026 .
+The Total Price should be automatically calculated and updated
+based on the selected date range.
+Acceptance Criteria
+Past dates must not be selectable.
+The check-out date must be at least one day after the selected
+check-in date.
+The total price should be calculated based on the selected dates.
+Single date cannot be selected.
+Nearby Properties
+[Reference]
+Add a dropdown selector in the Nearby Properties section with the
+following options:
+Most Popular
+Highest Price
+Lowest Price
+The dropdown should default to Most Popular.
+When the page loads:
+Make an API call to /get-property .
+Dusting Off JS, TS & Node.js
+17Fetch and display the Most Popular properties in the Nearby
+Properties section.
+While calling the API, pass the limit query parameter based on the
+platform.
+For example:
+Desktop: limit=6
+Mobile: limit=4
+When a different option is selected from the dropdown, make the
+corresponding API call and update the Nearby Properties section with
+the new result.
+For the property images, use the following image service URL:
+https://beta.imgservice.rentbyowner.com/640x300/
+Example:
+https://beta.imgservice.rentbyowner.com/640x300/villa-te-soro-bed-and-bre-nz-
+auckland-bc-4379041-0.jpg
+Favorites
+Dusting Off JS, TS & Node.js
+18Requirements
+Clicking the “Favourite/Heart” icon should toggle it to a red (active)
+state.
+Property ID for each tile should be stored in local storage.
+Acceptance Criteria
+Favourite properties should persist after a page reload.
+The favourites list should remain consistent across all platforms.
+Adding to and removing from favourites should function correctly.
+Map
+Dusting Off JS, TS & Node.js
+19Add map markers for the properties displayed in the Nearby Properties
+section.
+Hovering over a property tile should highlight the corresponding
+marker on the map.
+Clicking on a map marker should highlight the corresponding property
+tile.
+[Reference]
+Overall Validation
+The Google Maps API Key must not be committed to the repository. Ensure it
+is excluded using .gitignore .
+The application should run without console errors or warnings.
+The UI should remain stable across all interactions, with no broken layouts
+or unexpected behavior.
+Edge cases should be handled properly.
+The codebase should be clean, readable, and free of unused or dead
+code.
