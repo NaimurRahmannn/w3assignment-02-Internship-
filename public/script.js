@@ -215,9 +215,16 @@ document.addEventListener("DOMContentLoaded", () => {
               center: fallbackPosition,
               zoom: mapZoom,
               zoomControl: true,
+              zoomControlOptions: {
+                style: window.google.maps.ZoomControlStyle.LARGE,
+                position: window.google.maps.ControlPosition.TOP_LEFT
+              },
               mapTypeControl: false,
               streetViewControl: false,
-              fullscreenControl: false
+              fullscreenControl: true,
+              fullscreenControlOptions: {
+                position: window.google.maps.ControlPosition.TOP_RIGHT
+              }
             });
 
             const marker = new window.google.maps.Marker({
@@ -564,10 +571,17 @@ document.addEventListener("DOMContentLoaded", () => {
         mapInstance = new window.google.maps.Map(mapCanvas, {
           center: { lat: 18.4906, lng: -68.3639 },
           zoom: mapZoom,
-          zoomControl: false,
+          zoomControl: true,
+          zoomControlOptions: {
+            style: window.google.maps.ZoomControlStyle.LARGE,
+            position: window.google.maps.ControlPosition.TOP_LEFT
+          },
           mapTypeControl: false,
           streetViewControl: false,
-          fullscreenControl: false
+          fullscreenControl: true,
+          fullscreenControlOptions: {
+            position: window.google.maps.ControlPosition.TOP_RIGHT
+          }
         });
 
         mapInstance.addListener("zoom_changed", syncMapZoom);

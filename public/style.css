@@ -2658,6 +2658,18 @@ h2 {
   border: 0;
 }
 
+.nearby-map-embed .gm-style .gm-bundled-control, .location-section .gm-style .gm-bundled-control, [data-location-map] .gm-style .gm-bundled-control {
+  margin-top: 0 !important;
+}
+
+/* Ensure the fullscreen control does not add any top margin */
+.nearby-map-embed .gm-style .gm-fullscreen-control,
+.location-section .gm-style .gm-fullscreen-control,
+[data-location-map] .gm-style .gm-fullscreen-control {
+  margin-top: 0 !important;
+  top: 0 !important;
+}
+
 .nearby-map-controls {
   position: absolute;
   top: 18px;
