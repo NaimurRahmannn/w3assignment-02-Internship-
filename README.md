@@ -8,6 +8,7 @@ Live demo: https://w3assignment-02-internship.onrender.com/   (did not set the .
 - Nearby properties fetched from server endpoints (`/get-property`).
 - Image gallery modal with touch slider on mobile.
 - Hotel Datepicker used for check-in / check-out fields and price calculation.
+-Description--Show more button expand the section to display a longer description/show less button back to orginal state
 - Google Maps integration with custom Map/Satellite toggle and fullscreen support.
 - Responsive layout and UI fixes for mobile/tablet.
 
@@ -86,6 +87,5 @@ W3-html-css/
 
 ## Security Notes
 
-⚠️ **Google Maps API Key Exposure**: The current implementation exposes our API key to the client via `/maps-config.js`. While this is acceptable for development with a browser-restricted key, **it is not recommended for production**. 
-
+⚠️ **Google Maps API Key Exposure**: The current implementation exposes our API key to the client via `/maps-config.js`. While this is acceptable for development with a browser-restricted key, **it is not recommended for production**.  (Development local server)
 
