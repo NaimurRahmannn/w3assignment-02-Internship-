@@ -3819,6 +3819,28 @@ video {
     grid-template-columns: 1fr;
   }
 
+  .booking-card__dates .datepicker {
+    left: 0;
+    right: 0;
+    top: calc(100% + 8px);
+    width: 100%;
+    max-width: 100%;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .booking-card__dates .datepicker .datepicker__buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .booking-card__dates .datepicker .datepicker__close-button {
+    margin-left: auto;
+  }
+
   .augue_Card1__inner-container {
     margin: 12px;
   }
@@ -3970,7 +3992,7 @@ video {
   }
 
   .booking-card {
-    display: none;
+    display: block;
   }
 
   .property-hero__container,
@@ -4553,8 +4575,7 @@ video {
     background-color: rgba(23, 67, 72, 0.82);
   }
 
-  .section-tabs,
-  .booking-card {
+  .section-tabs {
     display: none !important;
   }
 
