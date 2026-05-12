@@ -200,9 +200,13 @@ document.addEventListener("DOMContentLoaded", () => {
       let mapCardByKey = new Map();
       let hasPropertyMarkers = false;
       let pendingProperties = null;
-      let activeMarker = null;
-      let activeMarkerKey = "";
+      let hoverMarker = null;
+      let hoverMarkerKey = "";
+      let selectedMarker = null;
+      let selectedMarkerKey = "";
       let pendingHoverKey = "";
+      let pendingSelectedKey = "";
+      let pendingSelectedPosition = null;
       let currentHoverCard = null;
       let activeCard = null;
       let highlightIcon = null;
@@ -257,12 +261,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         marker.setZIndex(isActive ? 1000 : null);
       };
-      const clearMarkerHighlight = () => {
-        if (activeMarker) {
-          setMarkerHighlight(activeMarker, false);
+      const clearHoverMarker = () => {
+        if (hoverMarker && hoverMarker !== selectedMarker) {
+          setMarkerHighlight(hoverMarker, false);
         }
-        activeMarker = null;
-        activeMarkerKey = "";
+        hoverMarker = null;
+        hoverMarkerKey = "";
+      };
+      const clearSelectedMarker = () => {
+        if (selectedMarker && selectedMarker !== hoverMarker) {
+          setMarkerHighlight(selectedMarker, false);
+        }
+        selectedMarker = null;
+        selectedMarkerKey = "";
       };
 
       // Card highlighting based on map interactions and vice versa.
@@ -296,10 +307,10 @@ document.addEventListener("DOMContentLoaded", () => {
           card.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
       };
-      const highlightMarkerByKey = (key) => {
+      const setHoverMarkerByKey = (key) => {
         if (!key) {
           pendingHoverKey = "";
-          clearMarkerHighlight();
+          clearHoverMarker();
           return;
         }
         const marker = markerByKey.get(key);
@@ -308,20 +319,46 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
         pendingHoverKey = "";
-        if (activeMarkerKey === key) {
+        if (hoverMarkerKey === key) {
           return;
         }
-        clearMarkerHighlight();
+        if (hoverMarker && hoverMarker !== selectedMarker) {
+          setMarkerHighlight(hoverMarker, false);
+        }
         setMarkerHighlight(marker, true);
-        activeMarker = marker;
-        activeMarkerKey = key;
+        hoverMarker = marker;
+        hoverMarkerKey = key;
+      };
+      const setSelectedMarkerByKey = (key) => {
+        if (!key) {
+          pendingSelectedKey = "";
+          clearSelectedMarker();
+          return;
+        }
+        const marker = markerByKey.get(key);
+        if (!marker) {
+          pendingSelectedKey = key;
+          return;
+        }
+        pendingSelectedKey = "";
+        if (selectedMarkerKey === key) {
+          setMarkerHighlight(marker, true);
+          return;
+        }
+        if (selectedMarker && selectedMarker !== marker && selectedMarker !== hoverMarker) {
+          setMarkerHighlight(selectedMarker, false);
+        }
+        setMarkerHighlight(marker, true);
+        selectedMarker = marker;
+        selectedMarkerKey = key;
       };
       const clearPropertyMarkers = () => {
         propertyMarkers.forEach((marker) => marker.setMap(null));
         propertyMarkers = [];
         markerByKey.clear();
         hasPropertyMarkers = false;
-        clearMarkerHighlight();
+        clearHoverMarker();
+        clearSelectedMarker();
       };
       const syncMapZoom = () => {
         if (!mapInstance) {
@@ -352,17 +389,28 @@ document.addEventListener("DOMContentLoaded", () => {
         return "";
       };
       const getCardMarkerKey = (card) => (card ? card.dataset.markerKey || "" : "");
+      const getCardLocation = (card) => {
+        if (!card) {
+          return null;
+        }
+        const lat = Number.parseFloat(card.dataset.locationLat || "");
+        const lng = Number.parseFloat(card.dataset.locationLng || "");
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          return null;
+        }
+        return { lat, lng };
+      };
       const setHoverCard = (card) => {
         if (currentHoverCard === card) {
           return;
         }
         currentHoverCard = card;
         const key = getCardMarkerKey(card);
-        highlightMarkerByKey(key);
+        setHoverMarkerByKey(key);
       };
       const clearHoverCard = () => {
         currentHoverCard = null;
-        highlightMarkerByKey("");
+        clearHoverMarker();
       };
       const addPropertyMarkers = (items) => {
         if (!Array.isArray(items)) {
@@ -398,7 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (markerKey) {
             markerByKey.set(markerKey, marker);
             marker.addListener("click", () => {
-              highlightMarkerByKey(markerKey);
+              setSelectedMarkerByKey(markerKey);
               highlightCardByKey(markerKey, { scroll: true });
             });
           }
@@ -421,8 +469,11 @@ document.addEventListener("DOMContentLoaded", () => {
           window.google.maps.event.addListenerOnce(mapInstance, "idle", syncMapZoom);
         }
 
+        if (pendingSelectedKey) {
+          setSelectedMarkerByKey(pendingSelectedKey);
+        }
         if (pendingHoverKey) {
-          highlightMarkerByKey(pendingHoverKey);
+          setHoverMarkerByKey(pendingHoverKey);
         }
       };
       const initMap = async () => {
@@ -476,6 +527,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (pendingProperties) {
           addPropertyMarkers(pendingProperties);
           pendingProperties = null;
+        }
+
+        if (pendingSelectedPosition) {
+          mapInstance.panTo(pendingSelectedPosition);
+          pendingSelectedPosition = null;
         }
       };
       const updateMapZoom = (delta) => {
@@ -605,6 +661,9 @@ document.addEventListener("DOMContentLoaded", () => {
         status.textContent = message;
         grid.append(status);
         syncMapHeight();
+        pendingHoverKey = "";
+        pendingSelectedKey = "";
+        pendingSelectedPosition = null;
         clearCardHighlight();
         clearHoverCard();
         clearPropertyMarkers();
@@ -615,12 +674,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const partner = item.Partner || {};
         const propertyId = item.ID ? String(item.ID) : "";
         const markerKey = getMarkerKey(item);
+        const lat = Number.parseFloat(geo.Lat);
+        const lng = Number.parseFloat(geo.Lng);
 
         const article = document.createElement("article");
         article.className = "resort-card";
         if (markerKey) {
           article.dataset.markerKey = markerKey;
           mapCardByKey.set(markerKey, article);
+        }
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+          article.dataset.locationLat = String(lat);
+          article.dataset.locationLng = String(lng);
         }
 
         const media = document.createElement("div");
@@ -650,6 +715,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const locationButton = document.createElement("button");
         locationButton.type = "button";
         locationButton.setAttribute("aria-label", "View location");
+        locationButton.setAttribute("data-location", "true");
         locationButton.innerHTML = '<i class="fa-solid fa-location-dot"></i>';
 
 
@@ -758,6 +824,29 @@ document.addEventListener("DOMContentLoaded", () => {
      // Event delegation for favorite buttons.
 
       grid.addEventListener("click", (event) => {
+        // Location button handling.
+        const locationButton = event.target.closest("[data-location]");
+        if (locationButton && grid.contains(locationButton)) {
+          const card = locationButton.closest(".resort-card");
+          if (!card) {
+            return;
+          }
+          const markerKey = getCardMarkerKey(card);
+          if (markerKey) {
+            setSelectedMarkerByKey(markerKey);
+          } else {
+            clearSelectedMarker();
+          }
+          const position = getCardLocation(card);
+          if (position) {
+            if (mapInstance) {
+              mapInstance.panTo(position);
+            } else {
+              pendingSelectedPosition = position;
+            }
+          }
+          return;
+        }
         const favoriteButton = event.target.closest("[data-favorite]");
         if (!favoriteButton || !grid.contains(favoriteButton)) {
           return;
