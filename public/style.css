@@ -894,8 +894,8 @@ body {
 .about-card__adults-exclusive-icon::after {
     content: "";
     position: absolute;
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     border: 2px solid black;
     display: flex;
